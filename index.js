@@ -8,6 +8,8 @@ const app = express()
 app.use(express.json())
 app.use(cors(corsOptions));
 
+app.get("/", (req, res) => res.send("Express on Vercel"));
+
 app.get('/companies', async (req, res) => {
     try {
         const data = await db.query('SELECT * FROM companies')
