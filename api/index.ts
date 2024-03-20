@@ -2,7 +2,7 @@ const express = require('express')
 const db = require('../dbconnection')
 const cors = require("cors");
 const corsOptions = {
-    origin: "https://react-vite-red-sigma.vercel.app/",
+    origin: "https://react-vite-red-sigma.vercel.app",
 };
 const app = express()
 app.use(express.json())
