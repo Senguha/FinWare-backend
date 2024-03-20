@@ -1,5 +1,5 @@
 const express = require('express')
-const db = require('../src/dbconnection')
+const db = require('./dbconnection')
 const cors = require("cors");
 const corsOptions = {
     origin: "http://localhost:5173",
