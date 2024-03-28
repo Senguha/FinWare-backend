@@ -56,6 +56,15 @@ app.get('/reports', async (req, res) => {
         res.sendStatus(500)
     }
 })
+app.get('/users', async (req, res) => {
+    try {
+        const data = await db.query('SELECT * FROM users')
+        res.status(200).send(data)
+    } catch (err) {
+        console.log(err)
+        res.sendStatus(500)
+    }
+})
 
 
 
