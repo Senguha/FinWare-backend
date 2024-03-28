@@ -38,6 +38,25 @@ app.get('/contactPersons', async (req, res) => {
         res.sendStatus(500)
     }
 })
+app.get('/countries', async (req, res) => {
+    try {
+        const data = await db.query('SELECT * FROM countries')
+        res.status(200).send(data)
+    } catch (err) {
+        console.log(err)
+        res.sendStatus(500)
+    }
+})
+app.get('/reports', async (req, res) => {
+    try {
+        const data = await db.query('SELECT * FROM reports')
+        res.status(200).send(data)
+    } catch (err) {
+        console.log(err)
+        res.sendStatus(500)
+    }
+})
+
 
 
 app.listen(5000, () => console.log(`Server has started on port: 5000`))
