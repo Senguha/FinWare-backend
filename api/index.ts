@@ -29,6 +29,15 @@ app.get('/parametres', async (req, res) => {
         res.sendStatus(500)
     }
 })
+app.get('/parameteresTypes', async (req, res) => {
+    try {
+        const data = await db.query('SELECT * FROM parameters_types')
+        res.status(200).send(data)
+    } catch (err) {
+        console.log(err)
+        res.sendStatus(500)
+    }
+})
 app.get('/contactPersons', async (req, res) => {
     try {
         const data = await db.query('SELECT * FROM contact_persons')
