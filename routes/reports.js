@@ -29,6 +29,7 @@ router.get("/", async (req, res) => {
   try {
     const data = await prisma.reports.findMany({
       where: { list_id: req.body.list_id },
+      orderBy: {param_id:'asc'},
     });
     res.status(200).json(data);
   } catch (err) {
@@ -36,6 +37,7 @@ router.get("/", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
 router.put("/", async (req, res) => {
   try {
     const Data = req.body

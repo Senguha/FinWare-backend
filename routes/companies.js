@@ -4,7 +4,9 @@ const prisma = require("../prisma/prismaClient");
 
 router.get("/", async (req, res) => {
   try {
-    const data = await prisma.companies.findMany();
+    const data = await prisma.companies.findMany({
+      orderBy: {title:"asc"},
+    });
     res.status(200).json(data);
   } catch (err) {
     console.log(err);
