@@ -3,9 +3,67 @@ const router = express.Router();
 const prisma = require("../prisma/prismaClient");
 
 router.get("/", async (req, res) => {
+  const brief = req.query.brief;
+  let data;
   try {
-    const data = await prisma.companies.findMany({
-      orderBy: {title:"asc"},
+    if (brief) {
+      data = await prisma.companies.findMany({
+        take: 5,
+        select: {
+          id: true,
+          title: true,
+          city: true,
+          countries: {
+            select: {
+              title: true,
+            },
+          },
+        },
+      });
+    } else {
+      data = await prisma.companies.findMany({
+        orderBy: { title: "asc" },
+        select: {
+          id: true,
+          title: true,
+          city: true,
+          countries: {
+            select: {
+              title: true,
+            },
+          },
+          report_lists: {
+            orderBy: { created_at: "desc" },
+            take: 1,
+            include: {
+              reports: {
+                where: {
+                  param_id: 203,
+                },
+                include: {
+                  parametres: {
+                    select: {
+                      title: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const data = await prisma.companies.findUnique({
+      where: { id: Number(req.params.id) },
     });
     res.status(200).json(data);
   } catch (err) {
@@ -38,7 +96,7 @@ router.delete("/:id", async (req, res) => {
     res.sendStatus(500);
   }
 });
-router.post("/",titleCheck, async (req, res) => {
+router.post("/", titleCheck, async (req, res) => {
   try {
     const Data = req.body;
     if (Data.personFirstName) {
@@ -95,17 +153,17 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-async function titleCheck(req,res,next){
-    if (req.body.title){
-        const company = await prisma.companies.findFirst({
-            where:{title: req.body.title},
-        })
-        if (company){
-            res.status(400).send("Предприятие с таким именем уже существует!")
-            return;
-        }
+async function titleCheck(req, res, next) {
+  if (req.body.title) {
+    const company = await prisma.companies.findFirst({
+      where: { title: req.body.title },
+    });
+    if (company) {
+      res.status(400).send("Предприятие с таким именем уже существует!");
+      return;
     }
-    next()
+  }
+  next();
 }
 
 module.exports = router;

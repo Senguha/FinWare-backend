@@ -17,10 +17,10 @@ model companies {
   street            String           @db.VarChar
   building          BigInt
   contact_person_id BigInt?
-  owner_user_id     BigInt
+  owner_user_id     BigInt?
   contact_persons   contact_persons? @relation(fields: [contact_person_id], references: [id], map: "public_Companies_contact_person_id_fkey")
   countries         countries        @relation(fields: [country_id], references: [id], onDelete: SetNull, map: "public_Companies_country_id_fkey")
-  users             users            @relation(fields: [owner_user_id], references: [id], onDelete: SetNull, map: "public_companies_owner_user_id_fkey")
+  users             users?           @relation(fields: [owner_user_id], references: [id], map: "public_companies_owner_user_id_fkey")
   report_lists      report_lists[]
 }
 
@@ -63,6 +63,15 @@ model parametres {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model report_lists {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime  @db.Date
+  company_id BigInt
+  companies  companies @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "public_report_lists_company_id_fkey")
+  reports    reports[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model reports {
   id           BigInt       @id(map: "Reports_pkey") @default(autoincrement())
   param_id     BigInt
@@ -80,13 +89,4 @@ model users {
   created_at DateTime    @default(now()) @db.Timestamptz(6)
   is_admin   Boolean     @default(false)
   companies  companies[]
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model report_lists {
-  id         BigInt    @id @default(autoincrement())
-  created_at DateTime  @db.Date
-  company_id BigInt
-  companies  companies @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "public_report_lists_company_id_fkey")
-  reports    reports[]
 }
