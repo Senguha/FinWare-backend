@@ -16,7 +16,7 @@ router.get("/lists/:id", async (req, res) => {
 router.get("/lists", async (req, res) => {
   try {
     const data = await prisma.report_lists.findMany({
-      where: { company_id: req.body.company_id },
+      where: { company_id: req.query.company_id },
     });
     res.status(200).json(data);
   } catch (err) {
@@ -26,10 +26,24 @@ router.get("/lists", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
+  const listId = req.query.list_id
+  
   try {
     const data = await prisma.reports.findMany({
-      where: { list_id: req.body.list_id },
+      where: { list_id: listId },
       orderBy: {param_id:'asc'},
+      select: {
+        id: true,
+        param_id: true,
+        param_value: true,
+        parametres: {
+          select: {
+            title: true,
+            measurement_unit: true,
+            desc: true,
+          }
+        }
+      }
     });
     res.status(200).json(data);
   } catch (err) {

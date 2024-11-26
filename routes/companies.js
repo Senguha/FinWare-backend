@@ -64,6 +64,28 @@ router.get("/:id", async (req, res) => {
   try {
     const data = await prisma.companies.findUnique({
       where: { id: Number(req.params.id) },
+      select: {
+        id: true,
+        title: true,
+        phone_number: true,
+        city: true,
+        street: true,
+        building: true,
+        countries: {
+          select: {
+            title: true,
+          },
+        },
+        contact_persons: {
+          select: {
+            first_name: true,
+            last_name: true,
+            middle_name: true,
+            phone_number: true,
+            position: true,
+          },
+        },
+      },
     });
     res.status(200).json(data);
   } catch (err) {
@@ -135,18 +157,6 @@ router.post("/", titleCheck, async (req, res) => {
       });
       res.status(200).json(createData);
     }
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
-});
-
-router.get("/:id", async (req, res) => {
-  try {
-    const data = await prisma.companies.findUnique({
-      where: { id: Number(req.params.id) },
-    });
-    res.status(200).json(data);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
