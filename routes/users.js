@@ -63,7 +63,7 @@ router.post("/register", loginCheck, async (req, res) => {
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',         // if they are on the same domain, set this to 'strict'
+      sameSite: 'strict',         // if they are on the same domain, set this to 'strict'
       path: '/',
     });
     res
@@ -105,7 +105,7 @@ router.post("/login", async (req, res) => {
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',         // if they are on the same domain, set this to 'strict'
+      sameSite: 'strict',         // if they are on the same domain, set this to 'strict'
       path: '/',
     });
     res
