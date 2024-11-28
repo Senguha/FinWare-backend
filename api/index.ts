@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const corsOptions = {
   origin: ["https://react-vite-red-sigma.vercel.app", "http://localhost:5173"],
   credentials: true,
-  allowedHeaders: '*',
+  allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 };
 const app = express();
