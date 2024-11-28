@@ -60,7 +60,12 @@ router.post("/register", loginCheck, async (req, res) => {
     });
     const userId = newUser.id;
     const token = jwt.sign({userId}, process.env.JWT_SECRET);
-    res.cookie("jwt", token);
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',         // if they are on the same domain, set this to 'strict'
+      path: '/',
+    });
     res
       .status(200)
       .json({
@@ -97,7 +102,12 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({userId}, process.env.JWT_SECRET);
 
     console.log(token);
-    res.cookie("jwt", token, { maxAge: 12 * 30 * 24 * 60 * 60 * 1000 });
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',         // if they are on the same domain, set this to 'strict'
+      path: '/',
+    });
     res
       .status(200)
       .json({
