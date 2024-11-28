@@ -10,7 +10,12 @@ const corsOptions = {
 const app = express();
 app.use(express.json());
 app.use(cors(corsOptions));
-app.use(cookieParser());
+app.use(cookieParser(undefined,{
+maxAge: 300 * 1000,
+httpOnly: true,
+secure: true,
+sameSite: 'none'
+}));
 
 const compRouter = require("../routes/companies");
 const contactRouter = require("../routes/contacts");
