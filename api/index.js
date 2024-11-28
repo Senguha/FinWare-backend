@@ -1,11 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const corsOptions = {
   origin: ["https://react-vite-red-sigma.vercel.app", "http://localhost:5173"],
+  credentials: true,
 };
 const app = express();
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 const compRouter = require("../routes/companies");
 const contactRouter = require("../routes/contacts");

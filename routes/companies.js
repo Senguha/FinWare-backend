@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const prisma = require("../prisma/prismaClient");
+const authCheck = require("../middleware/authCheck");
 
 router.get("/", async (req, res) => {
   const brief = req.query.brief;
@@ -59,7 +60,48 @@ router.get("/", async (req, res) => {
     res.sendStatus(500);
   }
 });
-
+router.get("/user/:id", authCheck, async (req, res) => {
+  try {
+    const data = await prisma.companies.findMany({
+      where: {
+        owner_user_id: req.user.id,
+      },
+      orderBy: { title: "asc" },
+      select: {
+        id: true,
+        title: true,
+        city: true,
+        countries: {
+          select: {
+            title: true,
+          },
+        },
+        report_lists: {
+          orderBy: { created_at: "desc" },
+          take: 1,
+          include: {
+            reports: {
+              where: {
+                param_id: 203,
+              },
+              include: {
+                parametres: {
+                  select: {
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+});
 router.get("/:id", async (req, res) => {
   try {
     const data = await prisma.companies.findUnique({
@@ -74,6 +116,7 @@ router.get("/:id", async (req, res) => {
         countries: {
           select: {
             title: true,
+            id: true,
           },
         },
         contact_persons: {
@@ -94,21 +137,127 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", titleCheck, async (req, res) => {
+router.put("/:id", authCheck, titleCheck, async (req, res) => {
   try {
+    
     const Data = req.body;
-    const updateData = await prisma.companies.update({
-      where: { id: Number(req.params.id) },
-      data: Data,
+    console.log(Data)
+    let comp;
+    let updateData, updateContact;
+    if (!req.user.is_admin) {
+      comp = await prisma.companies.findUnique({
+        where: { id: Number(req.params.id) },
+        select: {
+          owner_user_id: true,
+        },
+      });
+      if (comp.owner_user_id != req.user.id || !comp)
+        return res.status(401).send("Access denied");
+    }
+
+    const contact = await prisma.contact_persons.findMany({
+      where: { company_id: Number(req.params.id) },
     });
+    console.log("contact", contact)
+
+    if (Data.contact && contact.length != 0) {
+      console.log("Есть контактные данные и запись в базе")
+      updateData = await prisma.companies.update({
+        where: { id: Number(req.params.id) },
+        data: {
+          title: Data.title,
+          phone_number: Data.phoneNumber,
+          countries: { connect: { id: Number(Data.country) } },
+          city: Data.city,
+          street: Data.street,
+          building: Number(Data.building),
+        },
+      });
+      updateContact = await prisma.contact_persons.updateMany({
+        where: {
+          company_id: Number(req.params.id),
+        },
+        data: {
+          first_name: Data.personFirstName,
+          last_name: Data.personLastName,
+          middle_name: Data.personMiddleName,
+          phone_number: Number(Data.personNumber),
+          position: Data.personPosition,
+        },
+      });
+    } else if (Data.contact && contact.length == 0) {
+      console.log("Есть контактные данные и нет записи в базе")
+      updateData = await prisma.companies.update({
+        where: { id: Number(req.params.id) },
+        data: {
+          title: Data.title,
+          phone_number: Data.phoneNumber,
+          countries: { connect: { id: Number(Data.country) } },
+          city: Data.city,
+          street: Data.street,
+          building: Number(Data.building),
+          contact_persons: {
+            create: {
+              first_name: Data.personFirstName,
+              last_name: Data.personLastName,
+              middle_name: Data.personMiddleName,
+              phone_number: Number(Data.personNumber),
+              position: Data.personPosition,
+            }
+          },
+        },
+      });
+    } else if (!Data.contact && contact.length == 0) {
+      console.log("Нет контактных данных и нет записи в базе")
+      updateData = await prisma.companies.update({
+        where: { id: Number(req.params.id) },
+        data: {
+          title: Data.title,
+          phone_number: Data.phoneNumber,
+          countries: { connect: { id: Number(Data.country) } },
+          city: Data.city,
+          street: Data.street,
+          building: Number(Data.building),
+        },
+      });
+    } else if (!Data.contact && contact.length != 0) {
+      console.log("Нет контактных данных и есть запись в базе")
+      const delPerson = await prisma.contact_persons.deleteMany({
+        where: {
+          company_id: Number(req.params.id),
+        },
+      });
+      updateData = await prisma.companies.update({
+        where: { id: Number(req.params.id) },
+        data: {
+          title: Data.title,
+          phone_number: Data.phoneNumber,
+          countries: { connect: { id: Number(Data.country) } },
+          city: Data.city,
+          street: Data.street,
+          building: Number(Data.building),
+        },
+      });
+    }
     res.status(200).json(updateData);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
 });
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authCheck, async (req, res) => {
   try {
+    if (!req.user.is_admin) {
+      const comp = await prisma.companies.findUnique({
+        where: { id: Number(req.params.id) },
+        select: {
+          owner_user_id: true,
+        },
+      });
+      if (comp.owner_user_id != req.user.id || !comp)
+        return res.status(401).send("Access denied");
+    }
+
     const deleteData = await prisma.companies.delete({
       where: { id: Number(req.params.id) },
     });
@@ -118,28 +267,28 @@ router.delete("/:id", async (req, res) => {
     res.sendStatus(500);
   }
 });
-router.post("/", titleCheck, async (req, res) => {
+router.post("/", authCheck, titleCheck, async (req, res) => {
   try {
     const Data = req.body;
-    if (Data.personFirstName) {
+    if (Data.contact) {
       const createData = await prisma.companies.create({
         data: {
           title: Data.title,
-          phone_number: Data.phone_number,
-          countries: { connect: { id: Number(Data.country_id) } },
+          phone_number: Data.phoneNumber,
+          countries: { connect: { id: Number(Data.country) } },
           city: Data.city,
           street: Data.street,
           building: Number(Data.building),
           contact_persons: {
             create: {
-              first_name: Data.person_first_name,
-              last_name: Data.person_last_name,
-              middle_name: Data.person_middle_name,
-              phone_number: Number(Data.person_number),
-              position: Data.person_position,
+              first_name: Data.personFirstName,
+              last_name: Data.personLastName,
+              middle_name: Data.personMiddleName,
+              phone_number: Number(Data.personNumber),
+              position: Data.personPosition,
             },
           },
-          users: { connect: { id: Number(Data.owner_user_id) } },
+          users: { connect: { id: Number(req.user.id) } },
         },
       });
       res.status(200).json(createData);
@@ -147,12 +296,12 @@ router.post("/", titleCheck, async (req, res) => {
       const createData = await prisma.companies.create({
         data: {
           title: Data.title,
-          phone_number: Data.phoneNumber,
-          countries: { connect: { id: Number(Data.countryId) } },
+          phone_number: Data.phoneNumber.toString(),
+          countries: { connect: { id: Number(Data.country) } },
           city: Data.city,
           street: Data.street,
           building: Number(Data.building),
-          users: { connect: { id: Number(Data.ownerUserId) } },
+          users: { connect: { id: Number(req.user.id) } },
         },
       });
       res.status(200).json(createData);
@@ -168,7 +317,7 @@ async function titleCheck(req, res, next) {
     const company = await prisma.companies.findFirst({
       where: { title: req.body.title },
     });
-    if (company) {
+    if (company && company.id != req.params.id) {
       res.status(400).send("Предприятие с таким именем уже существует!");
       return;
     }

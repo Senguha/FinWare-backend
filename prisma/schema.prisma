@@ -9,30 +9,30 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model companies {
-  id                BigInt           @id @default(autoincrement())
-  title             String           @db.VarChar
-  phone_number      String?          @db.VarChar
-  country_id        BigInt
-  city              String           @db.VarChar
-  street            String           @db.VarChar
-  building          BigInt
-  contact_person_id BigInt?
-  owner_user_id     BigInt?
-  contact_persons   contact_persons? @relation(fields: [contact_person_id], references: [id], map: "public_Companies_contact_person_id_fkey")
-  countries         countries        @relation(fields: [country_id], references: [id], onDelete: SetNull, map: "public_Companies_country_id_fkey")
-  users             users?           @relation(fields: [owner_user_id], references: [id], map: "public_companies_owner_user_id_fkey")
-  report_lists      report_lists[]
+  id              BigInt            @id @default(autoincrement())
+  title           String            @db.VarChar
+  phone_number    String?           @db.VarChar
+  country_id      BigInt
+  city            String            @db.VarChar
+  street          String            @db.VarChar
+  building        BigInt
+  owner_user_id   BigInt?
+  countries       countries         @relation(fields: [country_id], references: [id], onDelete: SetNull, map: "public_Companies_country_id_fkey")
+  users           users?            @relation(fields: [owner_user_id], references: [id], map: "public_companies_owner_user_id_fkey")
+  contact_persons contact_persons[]
+  report_lists    report_lists[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model contact_persons {
-  id           BigInt      @id(map: "Contact_Person_pkey") @unique(map: "Contact_Person_id_key") @default(autoincrement())
-  first_name   String      @db.VarChar
-  last_name    String      @db.VarChar
-  middle_name  String?     @db.VarChar
+  id           BigInt     @id(map: "Contact_Person_pkey") @unique(map: "Contact_Person_id_key") @default(autoincrement())
+  first_name   String     @db.VarChar
+  last_name    String     @db.VarChar
+  middle_name  String?    @db.VarChar
   phone_number BigInt
-  position     String      @db.VarChar
-  companies    companies[]
+  position     String     @db.VarChar
+  company_id   BigInt?
+  companies    companies? @relation(fields: [company_id], references: [id])
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

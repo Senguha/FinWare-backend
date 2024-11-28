@@ -6,6 +6,7 @@ router.get("/lists/:id", async (req, res) => {
   try {
     const data = await prisma.report_lists.findUnique({
       where: { id: Number(req.params.id) },
+      orderBy: { created_at: "desc" },
     });
     res.status(200).json(data);
   } catch (err) {
@@ -17,6 +18,7 @@ router.get("/lists", async (req, res) => {
   try {
     const data = await prisma.report_lists.findMany({
       where: { company_id: req.query.company_id },
+      orderBy: { created_at: "desc" },
     });
     res.status(200).json(data);
   } catch (err) {
