@@ -113,6 +113,7 @@ router.get("/:id", async (req, res) => {
         city: true,
         street: true,
         building: true,
+        owner_user_id: true,
         countries: {
           select: {
             title: true,
@@ -155,6 +156,9 @@ router.put("/:id", authCheck, titleCheck, async (req, res) => {
         return res.status(401).send("Access denied");
     }
 
+    let newOwner;
+    req.user.is_admin ? (newOwner = Data.owner) : (newOwner = req.user.id);
+
     const contact = await prisma.contact_persons.findMany({
       where: { company_id: Number(req.params.id) },
     });
@@ -171,6 +175,7 @@ router.put("/:id", authCheck, titleCheck, async (req, res) => {
           city: Data.city,
           street: Data.street,
           building: Number(Data.building),
+          owner_user_id: newOwner,
         },
       });
       updateContact = await prisma.contact_persons.updateMany({
@@ -196,6 +201,7 @@ router.put("/:id", authCheck, titleCheck, async (req, res) => {
           city: Data.city,
           street: Data.street,
           building: Number(Data.building),
+          owner_user_id: newOwner,
           contact_persons: {
             create: {
               first_name: Data.personFirstName,
@@ -218,6 +224,7 @@ router.put("/:id", authCheck, titleCheck, async (req, res) => {
           city: Data.city,
           street: Data.street,
           building: Number(Data.building),
+          owner_user_id: newOwner,
         },
       });
     } else if (!Data.contact && contact.length != 0) {
@@ -236,6 +243,7 @@ router.put("/:id", authCheck, titleCheck, async (req, res) => {
           city: Data.city,
           street: Data.street,
           building: Number(Data.building),
+          owner_user_id: newOwner,
         },
       });
     }
@@ -270,6 +278,10 @@ router.delete("/:id", authCheck, async (req, res) => {
 router.post("/", authCheck, titleCheck, async (req, res) => {
   try {
     const Data = req.body;
+    
+    let newOwner;
+    req.user.is_admin ? (newOwner = Data.owner) : (newOwner = req.user.id);
+
     if (Data.contact) {
       const createData = await prisma.companies.create({
         data: {
@@ -288,7 +300,7 @@ router.post("/", authCheck, titleCheck, async (req, res) => {
               position: Data.personPosition,
             },
           },
-          users: { connect: { id: Number(req.user.id) } },
+          users: { connect: { id: Number(newOwner) } },
         },
       });
       res.status(200).json(createData);
@@ -301,7 +313,7 @@ router.post("/", authCheck, titleCheck, async (req, res) => {
           city: Data.city,
           street: Data.street,
           building: Number(Data.building),
-          users: { connect: { id: Number(req.user.id) } },
+          users: { connect: { id: Number(newOwner) } },
         },
       });
       res.status(200).json(createData);
