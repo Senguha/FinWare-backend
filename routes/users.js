@@ -19,7 +19,7 @@ router.put("/:id", authCheck, loginCheck, async (req, res) => {
     }
 
     let Data = req.body;
-    Data.is_admin.length !== 0 && (Data.is_admin = Data.is_admin === "true");
+    Data.is_admin?.length !== 0 && (Data.is_admin = Data.is_admin === "true");
     console.log(Data);
 
     if (req.body.password?.length === 0 || !req.body.password) {
