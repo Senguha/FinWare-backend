@@ -1,0 +1,148 @@
+{
+  "params": [
+    {
+      "id": "200",
+      "title": "Коэффициент абсолютной ликвидности",
+      "measurement_unit": null,
+      "desc": null
+    },
+    {
+      "id": "201",
+      "title": "Коэффициент быстрой (промежуточной) ликвидности",
+      "measurement_unit": null,
+      "desc": null
+    },
+    {
+      "id": "202",
+      "title": "Коэффициент текущей (общей) ликвидности ",
+      "measurement_unit": null,
+      "desc": null
+    },
+    {
+      "id": "300",
+      "title": "Коэффициент капитализации",
+      "measurement_unit": null,
+      "desc": null
+    },
+    {
+      "id": "301",
+      "title": "Коэффициент финансовой независимости ",
+      "measurement_unit": null,
+      "desc": null
+    },
+    {
+      "id": "302",
+      "title": "Коэффициент финансирования ",
+      "measurement_unit": null,
+      "desc": null
+    },
+    {
+      "id": "303",
+      "title": "Коэффициент финансовой устойчивости  ",
+      "measurement_unit": null,
+      "desc": null
+    },
+    {
+      "id": "105",
+      "title": "Оборотные активы",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "107",
+      "title": "НДС",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "111",
+      "title": "Собственный капитал",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "112",
+      "title": "Долгосрочные обязательства",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "113",
+      "title": "Заемные средства",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "114",
+      "title": "Кредиторская задолженность",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "115",
+      "title": "Резервы предстоящих расходов",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "203",
+      "title": "Чистые оборотные активы (капитал)",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "101",
+      "title": "Основные средства",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "102",
+      "title": "Незавершенное строительство",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "103",
+      "title": "Долгосрочные финансовые вложения",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "104",
+      "title": "Отложенные налоговые активы",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "106",
+      "title": "Запасы",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "108",
+      "title": "Дебиторская задолженность",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "109",
+      "title": "Краткосрочные финансовые вложения",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "110",
+      "title": "Денежные средства",
+      "measurement_unit": "₽",
+      "desc": null
+    },
+    {
+      "id": "100",
+      "title": "Внеоборотные активы",
+      "measurement_unit": "₽",
+      "desc": "Да-да-да"
+    }
+  ]
+}
