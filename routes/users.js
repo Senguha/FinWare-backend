@@ -66,7 +66,12 @@ router.post("/register", loginCheck, async (req, res) => {
     });
     const userId = newUser.id;
     const token = jwt.sign({ userId }, process.env.JWT_SECRET);
-    res.cookie("jwt", token);
+    res.cookie("jwt", token, {
+      maxAge: 1000 * 60 * 60 * 24 * 356,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax'
+      });
     res.status(200).json({
       login: newUser.login,
       id: newUser.id,
@@ -101,7 +106,12 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ userId }, process.env.JWT_SECRET);
 
     console.log(token);
-    res.cookie("jwt", token);
+    res.cookie("jwt", token,{
+      maxAge: 1000 * 60 * 60 * 24 * 356,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax'
+      });
     res.status(200).json({
       login: user.login,
       created_at: user.created_at,

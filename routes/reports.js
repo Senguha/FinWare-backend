@@ -40,6 +40,11 @@ router.get("/lists", async (req, res) => {
               },
             },
           },
+          companies: {
+            select: {
+              title: true,
+            }
+          }
         },
       });
     }

@@ -280,7 +280,8 @@ router.post("/", authCheck, titleCheck, async (req, res) => {
     const Data = req.body;
     
     let newOwner;
-    req.user.is_admin ? (newOwner = Data.owner) : (newOwner = req.user.id);
+    req.user.is_admin ? (Data.owner=== 0 ? (newOwner = req.user.id) : (newOwner = Data.owner)) : (newOwner = req.user.id);
+
 
     if (Data.contact) {
       const createData = await prisma.companies.create({
@@ -291,6 +292,7 @@ router.post("/", authCheck, titleCheck, async (req, res) => {
           city: Data.city,
           street: Data.street,
           building: Number(Data.building),
+          users: { connect: { id: Number(newOwner) } },
           contact_persons: {
             create: {
               first_name: Data.personFirstName,
@@ -300,7 +302,6 @@ router.post("/", authCheck, titleCheck, async (req, res) => {
               position: Data.personPosition,
             },
           },
-          users: { connect: { id: Number(newOwner) } },
         },
       });
       res.status(200).json(createData);
